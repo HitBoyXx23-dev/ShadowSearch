@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow Search 🔮 + Chat</title>
+  <title>Shadow Search 🔮</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -22,7 +22,16 @@
 
   <main id="results"></main>
 
-  <!-- 🌑 Global Chat Section -->
+  <!-- In-app page viewer -->
+  <div id="viewerOverlay" class="hidden">
+    <div id="viewerHeader">
+      <button id="closeViewer">← Back</button>
+      <a id="viewerLink" href="#" target="_blank">Open Externally ↗</a>
+    </div>
+    <iframe id="viewerFrame" src=""></iframe>
+  </div>
+
+  <!-- Global Chat -->
   <section id="chatSection" class="hidden">
     <div class="chat-header">
       <h2>💬 Global Chat</h2>
@@ -30,9 +39,7 @@
         Open Shadow Chat ↗
       </a>
     </div>
-
     <div id="chatWindow"></div>
-
     <div id="chatInputContainer">
       <input id="chatMessage" type="text" placeholder="Type a message..." />
       <button id="sendChat">Send</button>
