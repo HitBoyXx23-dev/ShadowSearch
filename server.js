@@ -1,3 +1,7 @@
+// ======== SHADOW SEARCH SERVER ========
+// Meta search engine with multiple sources
+// 🔮 Created by HitBoy - Dark Mode Version
+
 import express from "express";
 import axios from "axios";
 import cors from "cors";
@@ -7,200 +11,168 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// ==== API KEYS (put yours here directly) ====
-// ⚠️ For personal use only — don’t expose these in public repos
-const GOOGLE_KEY = "YOUR_GOOGLE_API_KEY";
-const GOOGLE_CX = "YOUR_GOOGLE_CX";
-const BRAVE_KEY  = "YOUR_BRAVE_API_KEY";
-const BING_KEY   = "YOUR_BING_API_KEY";
-const NAVER_ID   = "YOUR_NAVER_CLIENT_ID";
-const NAVER_SECRET = "YOUR_NAVER_CLIENT_SECRET";
+// =============================
+// 🔑 CONFIG SECTION
+// =============================
+// Google Custom Search
+const GOOGLE_KEY = "AIzaSyBRgF-ld8IYZ-6aDucPZxrHvqyulTB6VPc"; // Your Google API Key
+const GOOGLE_CX  = "e548168d0afe5452f"; // Your Custom Search Engine ID
 
-// Unified Search Route
+// SearXNG public instance (or self-host)
+const SEARX_URL = "https://searx.be";
+
+// Startpage & DuckDuckGo use public endpoints
+// (no API keys needed)
+console.log("☁️ Shadow Search backend initializing...");
+
+// =============================
+// 🔍 /api/search - Aggregate multi-engine search
+// =============================
 app.get("/api/search", async (req, res) => {
   const { q, type = "web" } = req.query;
   if (!q) return res.status(400).json({ error: "Missing query" });
 
-  const results = [];
   const tasks = [];
 
   try {
-    // === Google Search ===
-    if (type === "web" && GOOGLE_KEY && GOOGLE_CX) {
+    // === GOOGLE ===
+    if (GOOGLE_KEY && GOOGLE_CX) {
       tasks.push(
         axios
           .get("https://www.googleapis.com/customsearch/v1", {
-            params: { key: GOOGLE_KEY, cx: GOOGLE_CX, q }
+            params: {
+              key: GOOGLE_KEY,
+              cx: GOOGLE_CX,
+              q,
+              searchType: type === "images" ? "image" : undefined,
+            },
           })
-          .then(r => (r.data.items || []).map(i => ({
-            title: i.title,
-            link: i.link,
-            snippet: i.snippet,
-            source: "Google"
-          })))
+          .then((r) =>
+            (r.data.items || []).map((i) => ({
+              title: i.title,
+              link: i.link,
+              snippet: i.snippet || "",
+              image: i.pagemap?.cse_thumbnail?.[0]?.src || null,
+              source: "Google",
+            }))
+          )
+          .catch(() => [])
       );
     }
 
-    // === Bing Web ===
-    if (type === "web" && BING_KEY) {
-      tasks.push(
-        axios
-          .get("https://api.bing.microsoft.com/v7.0/search", {
-            headers: { "Ocp-Apim-Subscription-Key": BING_KEY },
-            params: { q }
-          })
-          .then(r => (r.data.webPages?.value || []).map(i => ({
-            title: i.name,
+    // === DUCKDUCKGO ===
+    tasks.push(
+      axios
+        .get("https://api.duckduckgo.com/", {
+          params: { q, format: "json", no_html: 1, skip_disambig: 1 },
+        })
+        .then((r) => {
+          const data = r.data;
+          const out = [];
+          if (data.AbstractText) {
+            out.push({
+              title: data.Heading || q,
+              link: data.AbstractURL || "",
+              snippet: data.AbstractText,
+              source: "DuckDuckGo",
+            });
+          }
+          if (Array.isArray(data.RelatedTopics)) {
+            data.RelatedTopics.slice(0, 5).forEach((t) => {
+              if (t.Text && t.FirstURL) {
+                out.push({
+                  title: t.Text,
+                  link: t.FirstURL,
+                  snippet: t.Text,
+                  source: "DuckDuckGo",
+                });
+              }
+            });
+          }
+          return out;
+        })
+        .catch(() => [])
+    );
+
+    // === STARTPAGE (unofficial JSON wrapper) ===
+    tasks.push(
+      axios
+        .get("https://api.startpage.com/do/search", {
+          params: { q, format: "json" },
+        })
+        .then((r) => {
+          const items = r.data?.results || [];
+          return items.map((i) => ({
+            title: i.title || i.url,
             link: i.url,
-            snippet: i.snippet,
-            source: "Bing"
-          })))
-      );
-    }
+            snippet: i.description || "",
+            source: "Startpage",
+          }));
+        })
+        .catch(() => [])
+    );
 
-    // === Brave Web ===
-    if (type === "web" && BRAVE_KEY) {
-      tasks.push(
-        axios
-          .get("https://api.search.brave.com/res/v1/web/search", {
-            headers: { "X-Subscription-Token": BRAVE_KEY },
-            params: { q }
-          })
-          .then(r => (r.data.web?.results || []).map(i => ({
-            title: i.title,
-            link: i.url,
-            snippet: i.description,
-            source: "Brave"
-          })))
-      );
-    }
-
-    // === Bing Images ===
-    if (type === "images" && BING_KEY) {
-      tasks.push(
-        axios
-          .get("https://api.bing.microsoft.com/v7.0/images/search", {
-            headers: { "Ocp-Apim-Subscription-Key": BING_KEY },
-            params: { q }
-          })
-          .then(r => (r.data.value || []).map(i => ({
-            title: i.name,
-            link: i.contentUrl,
-            image: i.thumbnailUrl,
-            source: "Bing Images"
-          })))
-      );
-    }
-
-    // === Brave Images ===
-    if (type === "images" && BRAVE_KEY) {
-      tasks.push(
-        axios
-          .get("https://api.search.brave.com/res/v1/images/search", {
-            headers: { "X-Subscription-Token": BRAVE_KEY },
-            params: { q }
-          })
-          .then(r => (r.data.results || []).map(i => ({
-            title: i.title,
-            link: i.url,
-            image: i.thumbnail?.src,
-            source: "Brave Images"
-          })))
-      );
-    }
-
-    // === Bing Videos ===
-    if (type === "videos" && BING_KEY) {
-      tasks.push(
-        axios
-          .get("https://api.bing.microsoft.com/v7.0/videos/search", {
-            headers: { "Ocp-Apim-Subscription-Key": BING_KEY },
-            params: { q }
-          })
-          .then(r => (r.data.value || []).map(i => ({
-            title: i.name,
-            link: i.contentUrl,
-            image: i.thumbnailUrl,
-            snippet: i.description,
-            source: "Bing Videos"
-          })))
-      );
-    }
-
-    // === Brave Videos ===
-    if (type === "videos" && BRAVE_KEY) {
-      tasks.push(
-        axios
-          .get("https://api.search.brave.com/res/v1/videos/search", {
-            headers: { "X-Subscription-Token": BRAVE_KEY },
-            params: { q }
-          })
-          .then(r => (r.data.results || []).map(i => ({
+    // === SEARXNG ===
+    tasks.push(
+      axios
+        .get(`${SEARX_URL}/search`, {
+          params: {
+            q,
+            format: "json",
+            categories: type === "images" ? "images" : "general",
+          },
+        })
+        .then((r) =>
+          (r.data.results || []).map((i) => ({
             title: i.title,
             link: i.url,
-            image: i.thumbnail?.src,
-            snippet: i.description,
-            source: "Brave Videos"
-          })))
-      );
-    }
+            snippet: i.content || "",
+            image: i.img_src || null,
+            source: "SearXNG",
+          }))
+        )
+        .catch(() => [])
+    );
 
-    // === News (Bing + Brave) ===
-    if (type === "news" && BING_KEY) {
-      tasks.push(
-        axios
-          .get("https://api.bing.microsoft.com/v7.0/news/search", {
-            headers: { "Ocp-Apim-Subscription-Key": BING_KEY },
-            params: { q }
-          })
-          .then(r => (r.data.value || []).map(i => ({
-            title: i.name,
-            link: i.url,
-            snippet: i.description,
-            source: "Bing News"
-          })))
-      );
-    }
-
-    if (type === "news" && BRAVE_KEY) {
-      tasks.push(
-        axios
-          .get("https://api.search.brave.com/res/v1/news/search", {
-            headers: { "X-Subscription-Token": BRAVE_KEY },
-            params: { q }
-          })
-          .then(r => (r.data.results || []).map(i => ({
-            title: i.title,
-            link: i.url,
-            snippet: i.description,
-            source: "Brave News"
-          })))
-      );
-    }
-
-    // Execute all calls concurrently
+    // === Run all searches concurrently ===
     const responses = await Promise.all(tasks);
     const merged = responses.flat();
 
-    // Deduplicate by link
-    const unique = Array.from(new Map(merged.map(i => [i.link, i])).values());
+    // === Deduplicate results by link ===
+    const unique = Array.from(new Map(merged.map((r) => [r.link, r])).values());
+
     res.json(unique);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ error: err.message });
+    console.error("Search error:", err.message);
+    res.status(500).json({ error: "Search failed." });
   }
 });
 
-// AI Summary — Shadow Chat
-app.post("/api/summary", async (req, res) => {
-  const { query } = req.body;
-  try {
-    const r = await axios.post("https://shadow-chat-a5f1.onrender.com/api/summary", { query });
-    res.json(r.data);
-  } catch {
-    res.status(500).json({ error: "Shadow Chat offline or unreachable" });
-  }
+// =============================
+// 🧠 LOCAL SUMMARY (non-AI)
+// =============================
+app.post("/api/summary", (req, res) => {
+  const { query, results = [] } = req.body;
+  if (!query) return res.status(400).json({ error: "Missing query" });
+
+  // Generate a basic text summary from top 5 results
+  const top = results.slice(0, 5);
+  const summaryText =
+    top.length > 0
+      ? `Here's what the web says about "${query}": ${top
+          .map((r) => r.title)
+          .join(", ")}.`
+      : `No clear information found for "${query}".`;
+
+  res.json({ summary: summaryText });
 });
 
+// =============================
+// 🌐 SERVER START
+// =============================
 const PORT = 3000;
-app.listen(PORT, () => console.log(`💜 Shadow Search running → http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(
+    `💜 Shadow Search running on http://localhost:${PORT} (Google + DuckDuckGo + Startpage + SearXNG)`
+  )
+);
