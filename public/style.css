@@ -1,0 +1,93 @@
+:root {
+  --black: #050505;
+  --purple: #7f3ff0;
+  --blue: #102040;
+  --text: #f2f2ff;
+  --card: #0d0d18;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, var(--blue), var(--black));
+  color: var(--text);
+  font-family: "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+h1 {
+  color: var(--purple);
+  text-shadow: 0 0 10px var(--purple);
+}
+
+input {
+  width: 60%;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--purple);
+  background: var(--card);
+  color: var(--text);
+}
+
+button {
+  background: var(--purple);
+  border: none;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+button:hover { opacity: 0.85; }
+
+#tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+#tabs button {
+  background: #141428;
+  border: 1px solid #282850;
+}
+
+#tabs button.active {
+  background: var(--purple);
+  color: white;
+}
+
+#results {
+  flex: 1;
+  display: grid;
+  gap: 1rem;
+  padding: 0 2rem 3rem;
+}
+
+.result-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 0 10px #111;
+}
+
+.result-card a {
+  color: var(--purple);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  border-top: 1px solid #111;
+  font-size: 0.9rem;
+  color: #aaa;
+}
