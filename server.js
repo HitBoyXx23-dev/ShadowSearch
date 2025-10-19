@@ -15,7 +15,7 @@ app.use(express.static("public"));
 // === CONFIG ===
 const GOOGLE_KEY = "AIzaSyBRgF-ld8IYZ-6aDucPZxrHvqyulTB6VPc";
 const GOOGLE_CX  = "e548168d0afe5452f";
-const SEARX_URL  = "https://searx.be"; // public instance
+const SEARX_URL  = "https://searx.be"; // public SearXNG instance
 
 // === SEARCH ROUTE ===
 app.get("/api/search", async (req, res) => {
@@ -126,10 +126,7 @@ app.get("/api/search", async (req, res) => {
 
     const responses = await Promise.all(tasks);
     const merged = responses.flat();
-
-    // Deduplicate by link
     const unique = Array.from(new Map(merged.map((r) => [r.link, r])).values());
-
     res.json(unique);
   } catch (err) {
     console.error("Search error:", err.message);
@@ -137,25 +134,19 @@ app.get("/api/search", async (req, res) => {
   }
 });
 
-// === SUMMARY ROUTE (non-AI) ===
+// === LOCAL SUMMARY (non-AI) ===
 app.post("/api/summary", (req, res) => {
   const { query, results = [] } = req.body;
   if (!query) return res.status(400).json({ error: "Missing query" });
-
   const top = results.slice(0, 5);
   const summary =
     top.length > 0
-      ? `Summary of top results for "${query}": ${top
-          .map((r) => r.title)
-          .join(", ")}.`
+      ? `Summary of results for "${query}": ${top.map((r) => r.title).join(", ")}.`
       : `No results to summarize for "${query}".`;
-
   res.json({ summary });
 });
 
 const PORT = 3000;
 app.listen(PORT, () =>
-  console.log(
-    `💜 Shadow Search running → http://localhost:${PORT} (Google + DuckDuckGo + Startpage + SearXNG)`
-  )
+  console.log(`💜 Shadow Search running → http://localhost:${PORT}`)
 );
