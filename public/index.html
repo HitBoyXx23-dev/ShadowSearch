@@ -21,6 +21,7 @@
     <button data-type="summary">Summary</button>
     <button data-type="chat">Chat</button>
     <button data-type="bookmarks">Bookmarks</button>
+    <button data-type="history">History</button>
     <button data-type="settings">Settings</button>
   </nav>
 
@@ -32,6 +33,7 @@
     <button id="nextPage">Next ▶</button>
   </div>
 
+  <!-- Chat -->
   <section id="chatSection" class="hidden">
     <iframe
       id="chatEmbed"
@@ -41,12 +43,24 @@
     ></iframe>
   </section>
 
+  <!-- Bookmarks -->
   <section id="bookmarkSection" class="hidden">
     <h2>⭐ Bookmarks</h2>
     <ul id="bookmarkList"></ul>
     <button id="downloadBookmarks">⬇ Download Bookmarks</button>
   </section>
 
+  <!-- History -->
+  <section id="historySection" class="hidden">
+    <h2>🕒 Search History</h2>
+    <ul id="historyList"></ul>
+    <div style="margin-top:1rem;">
+      <button id="downloadHistory">⬇ Download History</button>
+      <button id="clearHistory">🗑 Clear</button>
+    </div>
+  </section>
+
+  <!-- Settings -->
   <section id="settingsSection" class="hidden">
     <h2>⚙ Settings</h2>
     <label>
