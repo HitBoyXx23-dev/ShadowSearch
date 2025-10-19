@@ -1,7 +1,6 @@
 {
   "name": "shadow-search",
   "version": "1.0.0",
-  "description": "AI-powered meta search engine — Shadow Search",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
