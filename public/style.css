@@ -1,11 +1,216 @@
-/* ---- Extra Sections (Bookmarks, History, Settings) ---- */
+/* === Root Palette === */
+:root {
+  --black: #050505;
+  --purple: #7f3ff0;
+  --dark-blue: #0a0f2e;
+  --text: #f2f2ff;
+  --card: #0d0d18;
+}
+
+/* === Base Layout === */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at 25% 20%, var(--dark-blue), var(--black) 80%);
+  color: var(--text);
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* === Header / Search Bar === */
+header {
+  position: sticky;
+  top: 0;
+  background: rgba(5, 5, 10, 0.95);
+  backdrop-filter: blur(12px);
+  text-align: center;
+  padding: 1.5rem 1rem 1rem;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(127, 63, 240, 0.25);
+}
+
+h1 {
+  color: var(--purple);
+  font-size: 2.3rem;
+  text-shadow: 0 0 15px var(--purple);
+  margin: 0 0 0.8rem;
+}
+
+#searchForm {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+input {
+  width: 60%;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--purple);
+  background: var(--card);
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  box-shadow: inset 0 0 10px #2b0060;
+  transition: 0.3s ease;
+}
+
+input:focus {
+  border-color: #b78eff;
+  box-shadow: 0 0 12px #7f3ff0;
+}
+
+button {
+  background: linear-gradient(135deg, #7f3ff0, #3a00b3);
+  border: none;
+  color: white;
+  padding: 0.7rem 1.3rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px var(--purple);
+}
+
+/* === Tabs === */
+#tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+#tabs button {
+  background: #141428;
+  border: 1px solid #282850;
+  color: #ccc;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+}
+
+#tabs button.active {
+  background: var(--purple);
+  color: white;
+  box-shadow: 0 0 15px var(--purple);
+}
+
+/* === Results Grid === */
+#results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1rem;
+  padding: 0 2rem 3rem;
+  flex: 1;
+}
+
+.result-card {
+  background: rgba(15, 10, 30, 0.85);
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 0 15px rgba(15, 5, 35, 0.9);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px #7f3ff0;
+}
+
+.result-title {
+  color: #bfa9ff;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.result-title:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.result-card p {
+  margin: 0.4rem 0;
+  color: #c9c5dd;
+}
+
+.proxyView {
+  margin-top: 0.5rem;
+  background: #2a2144;
+  border: 1px solid #3e2e6f;
+  color: #c9bfff;
+  font-size: 0.85em;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+}
+.proxyView:hover {
+  background: var(--purple);
+  color: white;
+}
+
+/* === Image Grid === */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.image-grid img {
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+  object-fit: cover;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 0 10px #000;
+}
+
+.image-grid img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #7f3ff0;
+}
+
+/* === Pagination === */
+#pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+#pagination button {
+  background: #1a1430;
+  border: 1px solid #3a2a5a;
+  color: #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+#pagination button:hover {
+  background: var(--purple);
+  color: white;
+  box-shadow: 0 0 12px var(--purple);
+}
+
+/* === Extra Sections === */
 #bookmarkSection,
 #historySection,
 #settingsSection {
   flex: 1;
   width: 90%;
   margin: 1.5rem auto;
-  background: rgba(10, 10, 20, 0.85);
+  background: rgba(10, 10, 20, 0.9);
   border: 1px solid #3a3a6a;
   border-radius: 12px;
   box-shadow: 0 0 20px #7f3ff0;
@@ -39,18 +244,13 @@
 }
 
 #bookmarkList li a,
-#historyList li a,
 .historyRun {
   color: #b79cff;
   text-decoration: none;
   font-weight: 500;
-}
-
-.historyRun {
   background: none;
   border: none;
   cursor: pointer;
-  color: #b79cff;
 }
 
 .historyRun:hover,
@@ -59,46 +259,12 @@
   text-decoration: underline;
 }
 
-/* ---- Image Grid (for Images tab) ---- */
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
-}
-.image-grid img {
-  width: 100%;
-  border-radius: 10px;
-  object-fit: cover;
-  transition: transform 0.2s ease;
-}
-.image-grid img:hover {
-  transform: scale(1.05);
-}
-
-/* ---- Pagination ---- */
-#pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-#pagination button {
-  background: #141428;
-  border: 1px solid #3a3a6a;
-  color: var(--text);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-}
-#pagination button:hover {
-  background: var(--purple);
-}
-
-/* ---- Buttons in panels ---- */
 #downloadBookmarks,
 #downloadHistory,
+#clearBookmarks,
 #clearHistory,
-#downloadSettings {
+#downloadSettings,
+#resetAll {
   margin-top: 1rem;
   background: var(--purple);
   border: none;
@@ -106,10 +272,54 @@
   color: #fff;
   border-radius: 8px;
   cursor: pointer;
+  transition: 0.25s ease;
 }
+
 #downloadBookmarks:hover,
 #downloadHistory:hover,
+#clearBookmarks:hover,
 #clearHistory:hover,
-#downloadSettings:hover {
-  opacity: 0.85;
+#downloadSettings:hover,
+#resetAll:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px var(--purple);
+}
+
+/* === Chat Section === */
+#chatSection {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+#chatFrame {
+  width: 96%;
+  height: 92vh;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 0 40px #7f3ff0;
+}
+
+/* === Footer === */
+footer {
+  text-align: center;
+  padding: 1rem;
+  color: #999;
+  border-top: 1px solid #111;
+}
+
+footer a {
+  color: #a472ff;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* === Utility === */
+.hidden {
+  display: none !important;
 }
