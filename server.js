@@ -1,24 +1,30 @@
 import express from "express";
 import axios from "axios";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
+// ==== CONFIG (public demo keys — replace for production) ====
 const GOOGLE_KEY = "AIzaSyBRgF-ld8IYZ-6aDucPZxrHvqyulTB6VPc";
 const GOOGLE_CX  = "e548168d0afe5452f";
 const SEARX_URL  = "https://searx.be";
 
-// unified search
+// ==== SEARCH ENDPOINT ====
 app.get("/api/search", async (req, res) => {
   const { q, type = "web", page = 1 } = req.query;
   if (!q) return res.status(400).json({ error: "Missing query" });
   const start = (page - 1) * 10 + 1;
-  const tasks = [];
 
-  tasks.push(
+  console.log(`🔎  ShadowSearch → [${type}] "${q}" (page ${page})`);
+
+  const calls = [
+    // Google
     axios
       .get("https://www.googleapis.com/customsearch/v1", {
         params: {
@@ -39,9 +45,10 @@ app.get("/api/search", async (req, res) => {
         }))
       )
       .catch(() => [])
-  );
+  ];
 
-  tasks.push(
+  // SearXNG
+  calls.push(
     axios
       .get(`${SEARX_URL}/search`, {
         params: {
@@ -64,16 +71,44 @@ app.get("/api/search", async (req, res) => {
   );
 
   try {
-    const responses = await Promise.all(tasks);
-    const merged = responses.flat();
-    const unique = Array.from(new Map(merged.map(r => [r.link, r])).values());
+    const results = (await Promise.all(calls)).flat();
+    const unique = Array.from(new Map(results.map(r => [r.link, r])).values());
     res.json(unique);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+  } catch (err) {
+    console.error("❌  Search failed:", err.message);
+    res.status(500).json({ error: "Search failed." });
   }
 });
 
-const PORT = 3000;
+// ==== PROXY VIEWER ====
+app.get("/api/proxy", (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).send("Missing URL");
+
+  res.send(`
+    <!DOCTYPE html><html><head>
+    <title>Shadow Proxy – ${url}</title>
+    <style>
+      html,body{margin:0;height:100%;background:#000;color:#fff;}
+      iframe{width:100%;height:100%;border:none;}
+      #bar{position:fixed;top:0;left:0;width:100%;background:#111;
+           padding:8px;color:#aaa;z-index:99;font-family:sans-serif;}
+      #bar a{color:#7f3ff0;text-decoration:none;margin-left:1rem;}
+    </style></head>
+    <body>
+      <div id="bar">
+        Proxy View: ${url}
+        <a href="${url}" target="_blank">Open Directly</a>
+        <a href="/" style="float:right">✖ Close</a>
+      </div>
+      <iframe src="${url}"
+        sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
+    </body></html>
+  `);
+});
+
+// ==== START SERVER ====
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
-  console.log(`💜 Shadow Search running → http://localhost:${PORT}`)
+  console.log(`💜 Shadow Search Ultimate → http://localhost:${PORT}`)
 );
