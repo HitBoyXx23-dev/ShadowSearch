@@ -1,115 +1,115 @@
-:root {
-  --black: #050505;
-  --purple: #7f3ff0;
-  --dark-blue: #0a0f2e;
-  --text: #f2f2ff;
-  --card: #0d0d18;
+/* ---- Extra Sections (Bookmarks, History, Settings) ---- */
+#bookmarkSection,
+#historySection,
+#settingsSection {
+  flex: 1;
+  width: 90%;
+  margin: 1.5rem auto;
+  background: rgba(10, 10, 20, 0.85);
+  border: 1px solid #3a3a6a;
+  border-radius: 12px;
+  box-shadow: 0 0 20px #7f3ff0;
+  padding: 1.5rem;
+  overflow-y: auto;
 }
 
-body {
-  margin: 0;
-  background: radial-gradient(circle at top, var(--dark-blue), var(--black));
-  color: var(--text);
-  font-family: "Segoe UI", sans-serif;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-header {
-  text-align: center;
-  padding: 2rem 1rem;
-}
-
-h1 {
+#bookmarkSection h2,
+#historySection h2,
+#settingsSection h2 {
   color: var(--purple);
-  text-shadow: 0 0 10px var(--purple);
+  margin-top: 0;
 }
 
-input {
-  width: 60%;
+#bookmarkList,
+#historyList {
+  list-style: none;
+  padding: 0;
+}
+
+#bookmarkList li,
+#historyList li {
+  background: var(--card);
+  margin: 0.4rem 0;
   padding: 0.6rem 1rem;
   border-radius: 10px;
-  border: 1px solid var(--purple);
-  background: var(--card);
-  color: var(--text);
-}
-
-button {
-  background: var(--purple);
-  border: none;
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-button:hover { opacity: 0.85; }
-
-#tabs {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-}
-
-#tabs button {
-  background: #141428;
-  border: 1px solid #282850;
-}
-
-#tabs button.active {
-  background: var(--purple);
-  color: white;
-}
-
-#results {
-  flex: 1;
-  display: grid;
-  gap: 1rem;
-  padding: 0 2rem 3rem;
-}
-
-.result-card {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 1rem;
   box-shadow: 0 0 10px #111;
-}
-
-.result-title {
-  color: #9b7cf6;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 1.05em;
-}
-
-.result-title:hover {
-  text-decoration: underline;
-  color: #c7a9ff;
-}
-
-/* Embedded chat frame */
-#chatSection {
-  flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
 }
 
-#chatFrame {
-  width: 90%;
-  height: 80vh;
-  border-radius: 12px;
-  box-shadow: 0 0 20px #7f3ff0;
+#bookmarkList li a,
+#historyList li a,
+.historyRun {
+  color: #b79cff;
+  text-decoration: none;
+  font-weight: 500;
 }
 
-.hidden { display: none !important; }
+.historyRun {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #b79cff;
+}
 
-footer {
-  text-align: center;
-  padding: 1rem;
-  border-top: 1px solid #111;
-  color: #999;
+.historyRun:hover,
+#bookmarkList li a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ---- Image Grid (for Images tab) ---- */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+.image-grid img {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+.image-grid img:hover {
+  transform: scale(1.05);
+}
+
+/* ---- Pagination ---- */
+#pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+#pagination button {
+  background: #141428;
+  border: 1px solid #3a3a6a;
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+}
+#pagination button:hover {
+  background: var(--purple);
+}
+
+/* ---- Buttons in panels ---- */
+#downloadBookmarks,
+#downloadHistory,
+#clearHistory,
+#downloadSettings {
+  margin-top: 1rem;
+  background: var(--purple);
+  border: none;
+  padding: 0.6rem 1rem;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#downloadBookmarks:hover,
+#downloadHistory:hover,
+#clearHistory:hover,
+#downloadSettings:hover {
+  opacity: 0.85;
 }
