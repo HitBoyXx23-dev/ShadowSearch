@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- ===== Header / Search Bar ===== -->
   <header>
     <h1>SHADOW SEARCH</h1>
     <form id="searchForm">
@@ -15,6 +16,7 @@
     </form>
   </header>
 
+  <!-- ===== Tabs ===== -->
   <nav id="tabs">
     <button data-type="web" class="active">Web</button>
     <button data-type="images">Images</button>
@@ -25,52 +27,71 @@
     <button data-type="settings">Settings</button>
   </nav>
 
+  <!-- ===== Search Results ===== -->
   <main id="results"></main>
 
+  <!-- ===== Pagination ===== -->
   <div id="pagination" class="hidden">
     <button id="prevPage">◀ Prev</button>
     <span id="pageNum">1</span>
     <button id="nextPage">Next ▶</button>
   </div>
 
-  <!-- Chat -->
+  <!-- ===== Shadow Chat ===== -->
   <section id="chatSection" class="hidden">
     <iframe
-      id="chatEmbed"
+      id="chatFrame"
       src="https://shadow-chat-a5f1.onrender.com"
       frameborder="0"
       sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
     ></iframe>
   </section>
 
-  <!-- Bookmarks -->
+  <!-- ===== Bookmarks ===== -->
   <section id="bookmarkSection" class="hidden">
     <h2>⭐ Bookmarks</h2>
     <ul id="bookmarkList"></ul>
-    <button id="downloadBookmarks">⬇ Download Bookmarks</button>
+    <div style="margin-top:1rem;">
+      <button id="downloadBookmarks">⬇ Download</button>
+      <button id="clearBookmarks">🗑 Clear</button>
+    </div>
   </section>
 
-  <!-- History -->
+  <!-- ===== History ===== -->
   <section id="historySection" class="hidden">
     <h2>🕒 Search History</h2>
     <ul id="historyList"></ul>
     <div style="margin-top:1rem;">
-      <button id="downloadHistory">⬇ Download History</button>
+      <button id="downloadHistory">⬇ Download</button>
       <button id="clearHistory">🗑 Clear</button>
     </div>
   </section>
 
-  <!-- Settings -->
+  <!-- ===== Settings ===== -->
   <section id="settingsSection" class="hidden">
     <h2>⚙ Settings</h2>
     <label>
       <input type="checkbox" id="darkModeToggle" checked /> Dark Mode
-    </label>
+    </label><br/>
+    <label>
+      <input type="checkbox" id="safeSearch" /> Safe Search
+    </label><br/>
+    <label>Default Tab:
+      <select id="defaultTab">
+        <option value="web">Web</option>
+        <option value="images">Images</option>
+        <option value="summary">Summary</option>
+      </select>
+    </label><br/>
     <button id="downloadSettings">⬇ Export Settings</button>
+    <button id="resetAll">🧹 Reset Everything</button>
   </section>
 
+  <!-- ===== Footer ===== -->
   <footer>
-    🕶️ Powered by <a href="https://shadow-chat-a5f1.onrender.com" target="_blank">Shadow Chat</a> • Shadow Search © 2025
+    🕶️ Powered by 
+    <a href="https://shadow-chat-a5f1.onrender.com" target="_blank">Shadow Chat</a> • 
+    Shadow Search Ultimate © 2025
   </footer>
 
   <script src="script.js"></script>
