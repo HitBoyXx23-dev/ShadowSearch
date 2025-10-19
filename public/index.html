@@ -9,8 +9,10 @@
 <body>
   <header>
     <h1>SHADOW SEARCH</h1>
-    <input id="searchInput" placeholder="Search the void..." />
-    <button id="searchBtn">Go</button>
+    <form id="searchForm">
+      <input id="searchInput" placeholder="Search the void..." />
+      <button id="searchBtn" type="submit">Search</button>
+    </form>
   </header>
 
   <nav id="tabs">
@@ -18,18 +20,39 @@
     <button data-type="images">Images</button>
     <button data-type="summary">Summary</button>
     <button data-type="chat">Chat</button>
+    <button data-type="bookmarks">Bookmarks</button>
+    <button data-type="settings">Settings</button>
   </nav>
 
   <main id="results"></main>
 
-  <!-- 💬 Embedded Global Chat (iframe) -->
+  <div id="pagination" class="hidden">
+    <button id="prevPage">◀ Prev</button>
+    <span id="pageNum">1</span>
+    <button id="nextPage">Next ▶</button>
+  </div>
+
   <section id="chatSection" class="hidden">
     <iframe
-      id="chatFrame"
+      id="chatEmbed"
       src="https://shadow-chat-a5f1.onrender.com"
       frameborder="0"
-      allow="fullscreen"
+      sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
     ></iframe>
+  </section>
+
+  <section id="bookmarkSection" class="hidden">
+    <h2>⭐ Bookmarks</h2>
+    <ul id="bookmarkList"></ul>
+    <button id="downloadBookmarks">⬇ Download Bookmarks</button>
+  </section>
+
+  <section id="settingsSection" class="hidden">
+    <h2>⚙ Settings</h2>
+    <label>
+      <input type="checkbox" id="darkModeToggle" checked /> Dark Mode
+    </label>
+    <button id="downloadSettings">⬇ Export Settings</button>
   </section>
 
   <footer>
