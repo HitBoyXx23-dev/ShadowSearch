@@ -1,6 +1,7 @@
 // ======== SHADOW SEARCH SERVER ========
-// Meta search engine with multiple sources
-// 🔮 Created by HitBoy - Dark Mode Version
+// 🔮 Meta search engine by HitBoy
+// Aggregates Google + DuckDuckGo + Startpage + SearXNG
+// Serves static frontend and JSON API
 
 import express from "express";
 import axios from "axios";
@@ -11,23 +12,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// =============================
-// 🔑 CONFIG SECTION
-// =============================
-// Google Custom Search
-const GOOGLE_KEY = "AIzaSyBRgF-ld8IYZ-6aDucPZxrHvqyulTB6VPc"; // Your Google API Key
-const GOOGLE_CX  = "e548168d0afe5452f"; // Your Custom Search Engine ID
+// === CONFIG ===
+const GOOGLE_KEY = "AIzaSyBRgF-ld8IYZ-6aDucPZxrHvqyulTB6VPc";
+const GOOGLE_CX  = "e548168d0afe5452f";
+const SEARX_URL  = "https://searx.be"; // public instance
 
-// SearXNG public instance (or self-host)
-const SEARX_URL = "https://searx.be";
-
-// Startpage & DuckDuckGo use public endpoints
-// (no API keys needed)
-console.log("☁️ Shadow Search backend initializing...");
-
-// =============================
-// 🔍 /api/search - Aggregate multi-engine search
-// =============================
+// === SEARCH ROUTE ===
 app.get("/api/search", async (req, res) => {
   const { q, type = "web" } = req.query;
   if (!q) return res.status(400).json({ error: "Missing query" });
@@ -94,7 +84,7 @@ app.get("/api/search", async (req, res) => {
         .catch(() => [])
     );
 
-    // === STARTPAGE (unofficial JSON wrapper) ===
+    // === STARTPAGE ===
     tasks.push(
       axios
         .get("https://api.startpage.com/do/search", {
@@ -134,11 +124,10 @@ app.get("/api/search", async (req, res) => {
         .catch(() => [])
     );
 
-    // === Run all searches concurrently ===
     const responses = await Promise.all(tasks);
     const merged = responses.flat();
 
-    // === Deduplicate results by link ===
+    // Deduplicate by link
     const unique = Array.from(new Map(merged.map((r) => [r.link, r])).values());
 
     res.json(unique);
@@ -148,31 +137,25 @@ app.get("/api/search", async (req, res) => {
   }
 });
 
-// =============================
-// 🧠 LOCAL SUMMARY (non-AI)
-// =============================
+// === SUMMARY ROUTE (non-AI) ===
 app.post("/api/summary", (req, res) => {
   const { query, results = [] } = req.body;
   if (!query) return res.status(400).json({ error: "Missing query" });
 
-  // Generate a basic text summary from top 5 results
   const top = results.slice(0, 5);
-  const summaryText =
+  const summary =
     top.length > 0
-      ? `Here's what the web says about "${query}": ${top
+      ? `Summary of top results for "${query}": ${top
           .map((r) => r.title)
           .join(", ")}.`
-      : `No clear information found for "${query}".`;
+      : `No results to summarize for "${query}".`;
 
-  res.json({ summary: summaryText });
+  res.json({ summary });
 });
 
-// =============================
-// 🌐 SERVER START
-// =============================
 const PORT = 3000;
 app.listen(PORT, () =>
   console.log(
-    `💜 Shadow Search running on http://localhost:${PORT} (Google + DuckDuckGo + Startpage + SearXNG)`
+    `💜 Shadow Search running → http://localhost:${PORT} (Google + DuckDuckGo + Startpage + SearXNG)`
   )
 );
