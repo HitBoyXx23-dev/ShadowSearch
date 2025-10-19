@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shadow Search 🔮 + Chat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
 <body>
   <header>
     <h1>SHADOW SEARCH</h1>
@@ -8,13 +16,33 @@
   <nav id="tabs">
     <button data-type="web" class="active">Web</button>
     <button data-type="images">Images</button>
-    <button data-type="videos">Videos</button>
-    <button data-type="news">News</button>
-    <button data-type="summary">AI Summary</button>
+    <button data-type="summary">Summary</button>
+    <button data-type="chat">Chat</button>
   </nav>
 
   <main id="results"></main>
 
-  <footer>🕶️ Powered by Shadow Chat • Brave • Bing • Google</footer>
+  <!-- 🌑 Global Chat Section -->
+  <section id="chatSection" class="hidden">
+    <div class="chat-header">
+      <h2>💬 Global Chat</h2>
+      <a href="https://shadow-chat-a5f1.onrender.com" target="_blank" id="chatLink">
+        Open Shadow Chat ↗
+      </a>
+    </div>
+
+    <div id="chatWindow"></div>
+
+    <div id="chatInputContainer">
+      <input id="chatMessage" type="text" placeholder="Type a message..." />
+      <button id="sendChat">Send</button>
+    </div>
+  </section>
+
+  <footer>
+    🕶️ Powered by <a href="https://shadow-chat-a5f1.onrender.com" target="_blank">Shadow Chat</a> • Shadow Search © 2025
+  </footer>
+
   <script src="script.js"></script>
 </body>
+</html>
