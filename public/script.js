@@ -9,29 +9,45 @@ const prevBtn=document.getElementById("prevPage");
 const chatSection=document.getElementById("chatSection");
 const bookmarkSection=document.getElementById("bookmarkSection");
 const settingsSection=document.getElementById("settingsSection");
+const historySection=document.getElementById("historySection");
+
 const bookmarkList=document.getElementById("bookmarkList");
 const downloadBookmarks=document.getElementById("downloadBookmarks");
 const downloadSettings=document.getElementById("downloadSettings");
 const darkToggle=document.getElementById("darkModeToggle");
+const historyList=document.getElementById("historyList");
+const clearHistory=document.getElementById("clearHistory");
+const downloadHistory=document.getElementById("downloadHistory");
 
-let activeType="web";let currentPage=1;let bookmarks=JSON.parse(localStorage.getItem("bookmarks")||"[]");
+let activeType="web";
+let currentPage=1;
+let bookmarks=JSON.parse(localStorage.getItem("bookmarks")||"[]");
+let historyData=JSON.parse(localStorage.getItem("history")||"[]");
 
+// Load query from URL
 window.addEventListener("DOMContentLoaded",()=>{
   const url=new URLSearchParams(window.location.search);
-  const q=url.get("q");const p=url.get("page");
-  if(p)currentPage=Number(p);if(q){input.value=q;runSearch(q,currentPage);}
-  renderBookmarks();applySettings();
+  const q=url.get("q");
+  const p=url.get("page");
+  if(p)currentPage=Number(p);
+  if(q){input.value=q;runSearch(q,currentPage);}
+  renderBookmarks();
+  renderHistory();
+  applySettings();
 });
 
+// Tabs
 tabs.forEach(tab=>{
   tab.onclick=()=>{
     tabs.forEach(t=>t.classList.remove("active"));
     tab.classList.add("active");
     activeType=tab.dataset.type;
-    resultsDiv.innerHTML="";hideAllSections();
+    resultsDiv.innerHTML="";
+    hideAllSections();
     if(activeType==="chat")chatSection.classList.remove("hidden");
     else if(activeType==="bookmarks")bookmarkSection.classList.remove("hidden");
     else if(activeType==="settings")settingsSection.classList.remove("hidden");
+    else if(activeType==="history")historySection.classList.remove("hidden");
     else if(input.value.trim())runSearch(input.value.trim(),1);
   };
 });
@@ -39,7 +55,10 @@ function hideAllSections(){
   chatSection.classList.add("hidden");
   bookmarkSection.classList.add("hidden");
   settingsSection.classList.add("hidden");
+  historySection.classList.add("hidden");
 }
+
+// Search
 form.addEventListener("submit",e=>{
   e.preventDefault();
   runSearch(input.value.trim(),1);
@@ -52,6 +71,9 @@ async function runSearch(q,page){
   window.history.pushState({}, "", newUrl);
   resultsDiv.innerHTML=`<p>Loading ${activeType} results...</p>`;
   pagination.classList.add("hidden");
+
+  // Add to history
+  addHistory(q);
 
   if(activeType==="summary"){
     const res=await fetch(`/api/search?q=${encodeURIComponent(q)}`);
@@ -86,7 +108,7 @@ async function runSearch(q,page){
 nextBtn.onclick=()=>runSearch(input.value.trim(),currentPage+1);
 prevBtn.onclick=()=>{if(currentPage>1)runSearch(input.value.trim(),currentPage-1);};
 
-// BOOKMARKS
+// Bookmarks
 function addBookmark(item){
   if(!bookmarks.some(b=>b.link===item.link)){
     bookmarks.push(item);
@@ -103,7 +125,37 @@ downloadBookmarks.onclick=()=>{
   a.href=URL.createObjectURL(blob);a.download="shadow-bookmarks.json";a.click();
 };
 
-// SETTINGS
+// History
+function addHistory(query){
+  const entry={query,time:new Date().toLocaleString()};
+  historyData.unshift(entry);
+  historyData=historyData.slice(0,50); // keep last 50
+  localStorage.setItem("history",JSON.stringify(historyData));
+  renderHistory();
+}
+function renderHistory(){
+  if(!historyData.length){historyList.innerHTML="<p>No searches yet.</p>";return;}
+  historyList.innerHTML=historyData.map((h,i)=>`
+    <li>
+      <button class="historyRun" data-query="${h.query}">
+        🔍 ${h.query}
+      </button>
+      <span style="font-size:0.8em;color:#888;">${h.time}</span>
+    </li>`).join("");
+  document.querySelectorAll(".historyRun").forEach(btn=>{
+    btn.onclick=()=>{input.value=btn.dataset.query;runSearch(btn.dataset.query,1);};
+  });
+}
+clearHistory.onclick=()=>{
+  historyData=[];localStorage.setItem("history","[]");renderHistory();
+};
+downloadHistory.onclick=()=>{
+  const blob=new Blob([JSON.stringify(historyData,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download="shadow-history.json";a.click();
+};
+
+// Settings
 downloadSettings.onclick=()=>{
   const settings={dark:darkToggle.checked};
   const blob=new Blob([JSON.stringify(settings,null,2)],{type:"application/json"});
