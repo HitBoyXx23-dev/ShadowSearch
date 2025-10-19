@@ -22,28 +22,14 @@
 
   <main id="results"></main>
 
-  <!-- In-app page viewer -->
-  <div id="viewerOverlay" class="hidden">
-    <div id="viewerHeader">
-      <button id="closeViewer">← Back</button>
-      <a id="viewerLink" href="#" target="_blank">Open Externally ↗</a>
-    </div>
-    <iframe id="viewerFrame" src=""></iframe>
-  </div>
-
-  <!-- Global Chat -->
+  <!-- 💬 Embedded Global Chat (iframe) -->
   <section id="chatSection" class="hidden">
-    <div class="chat-header">
-      <h2>💬 Global Chat</h2>
-      <a href="https://shadow-chat-a5f1.onrender.com" target="_blank" id="chatLink">
-        Open Shadow Chat ↗
-      </a>
-    </div>
-    <div id="chatWindow"></div>
-    <div id="chatInputContainer">
-      <input id="chatMessage" type="text" placeholder="Type a message..." />
-      <button id="sendChat">Send</button>
-    </div>
+    <iframe
+      id="chatFrame"
+      src="https://shadow-chat-a5f1.onrender.com"
+      frameborder="0"
+      allow="fullscreen"
+    ></iframe>
   </section>
 
   <footer>
